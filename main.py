@@ -8,10 +8,17 @@ print('1. Add expense')
 print('2. View expenses')
 print('3. Remove expense')
 print('4. Show total expense')
-print('5. Quit')
+print('5. Edit a expense')
+print('6. Quit')
 
 os.makedirs('/home/tathagatkr/Documents/expense_tracker', exist_ok=True)
 
+def edit_expense():
+    expense=int(input('Enter the row of expense you want to edit:'))
+    with open('/home/tathagatkr/Documents/expense_tracker/data.csv','r') as f:
+        data=list(csv.reader(f))
+        remove_expense(expense)
+        add_expense()
 def write_header():
     if not os.path.exists('/home/tathagatkr/Documents/expense_tracker/data.csv'):
         with open('/home/tathagatkr/Documents/expense_tracker/data.csv','w',newline='') as f:
@@ -36,13 +43,12 @@ def view_expense():
         table=[[i,*row] for i,row in enumerate(data)]
         print(tabulate.tabulate(table[1:],headers=data[0],tablefmt='fancy-grid'))
 
-def remove_expense():
+def remove_expense(required_row):
     with open('/home/tathagatkr/Documents/expense_tracker/data.csv','r') as f:
         data=list(csv.reader(f))
         if not data[1:]:
             print('No expense is added.')
             return
-        required_row=input('Enter the number of row to remove:')
         if int(required_row)>=1:
             try:
                 data.pop(int(required_row))
@@ -73,13 +79,16 @@ def main():
             elif choice=='2':
                 view_expense()
             elif choice=='3':
-                remove_expense()
+                required_row=input('Enter the number of row to remove:')
+                remove_expense(required_row)
             elif choice=='4':
                 total_expense()
-            elif choice.lower() in ['5', 'quit', 'Quit', 'EXIT']:
+            elif choice=='5':
+                edit_expense()
+            elif choice.lower() in ['6', 'quit', 'Quit', 'EXIT']:
                 print('exiting...')
                 break
-        except (ValueError,IndexError,TypeError) as error:
+        except (ValueError,IndexError,TypeError,KeyboardInterrupt) as error:
             print(f'Error occured {error}')
             continue
 
